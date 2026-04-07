@@ -81,13 +81,28 @@ const autoSeed = async () => {
             console.log('No tables found. Running seed script...');
             const fs = require('fs');
             const mysql2 = require('mysql2/promise');
-            const seedConn = await mysql2.createConnection({
-                host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
-                port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
-                user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
-                password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
-                multipleStatements: true
-            });
+            let seedConfig;
+            if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
+                const dbUrl = new URL(process.env.MYSQL_URL || process.env.DATABASE_URL);
+                seedConfig = {
+                    host: dbUrl.hostname,
+                    port: dbUrl.port,
+                    user: dbUrl.username,
+                    password: dbUrl.password,
+                    database: dbUrl.pathname.replace('/', ''),
+                    multipleStatements: true
+                };
+            } else {
+                seedConfig = {
+                    host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
+                    port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
+                    user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
+                    password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
+                    database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || 'smart_classroom',
+                    multipleStatements: true
+                };
+            }
+            const seedConn = await mysql2.createConnection(seedConfig);
             const scriptPath = path.join(__dirname, '..', 'database', 'smart_classroom.sql');
             const script = fs.readFileSync(scriptPath, 'utf8');
             await seedConn.query(script);
