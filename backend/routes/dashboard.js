@@ -11,8 +11,8 @@ router.get('/summary', async (req, res) => {
     const userFilter = req.user.role === 'cr' ? `WHERE user_id = ${db.escape(req.user.id)}` : '';
     
     const [subjects] = await db.query(
-      `SELECT code, name, completed_classes as completed, (total_required_classes - completed_classes) as pending, ` +
-      `ROUND((completed_classes / total_required_classes) * 100) as percent FROM subjects ${userFilter}`
+      `SELECT code, name, faculty, completed_classes as completed, total_required_classes, (total_required_classes - completed_classes) as pending, ` +
+      `ROUND((completed_classes / total_required_classes) * 100) as percent, color_code FROM subjects ${userFilter}`
     );
 
     const [[{ total_completed }]] = await db.query(`SELECT SUM(completed_classes) as total_completed FROM subjects ${userFilter}`);
@@ -20,7 +20,8 @@ router.get('/summary', async (req, res) => {
     const overall_progress_percent = total_required > 0 ? Math.round((total_completed / total_required) * 100) : 0;
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dateObj = new Date();
+    // Use IST timezone (UTC+5:30) for correct schedule display
+    const dateObj = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
     const today = days[dateObj.getDay()];
     const todayDate = dateObj.toISOString().split('T')[0];
     const currentTime = dateObj.toTimeString().split(' ')[0];
@@ -29,7 +30,7 @@ router.get('/summary', async (req, res) => {
 
     const [today_schedule] = await db.query(
         'SELECT t.*, s.name as subject_name, s.color_code, c.room_name FROM timetable t ' +
-        'LEFT JOIN subjects s ON t.subject_code = s.code ' +
+        'LEFT JOIN subjects s ON t.user_id = s.user_id AND t.subject_code = s.code ' +
         'LEFT JOIN classrooms c ON t.room_id = c.id ' +
         'WHERE t.day = ? ' +
         'AND t.id NOT IN (SELECT timetable_id FROM attendance_log WHERE date = ? AND status IN ("conducted", "extra") AND timetable_id IS NOT NULL) ' +
