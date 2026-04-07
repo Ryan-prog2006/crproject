@@ -73,48 +73,70 @@ const autoBackfillAttendance = async () => {
     }
 };
 
-// Auto-seed database if tables don't exist (for Railway deployment)
+// Seed helper function
+const runSeed = async () => {
+    const fs = require('fs');
+    const mysql2 = require('mysql2/promise');
+    let seedConfig;
+    if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
+        const dbUrl = new URL(process.env.MYSQL_URL || process.env.DATABASE_URL);
+        seedConfig = {
+            host: dbUrl.hostname,
+            port: dbUrl.port,
+            user: dbUrl.username,
+            password: dbUrl.password,
+            database: dbUrl.pathname.replace('/', ''),
+            multipleStatements: true
+        };
+    } else {
+        seedConfig = {
+            host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
+            port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
+            user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
+            password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
+            database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || 'smart_classroom',
+            multipleStatements: true
+        };
+    }
+    const seedConn = await mysql2.createConnection(seedConfig);
+    const scriptPath = path.join(__dirname, '..', 'database', 'smart_classroom.sql');
+    const script = fs.readFileSync(scriptPath, 'utf8');
+    await seedConn.query(script);
+    await seedConn.end();
+};
+
+// Auto-seed database if no user data exists (for Railway deployment)
 const autoSeed = async () => {
     try {
-        const [tables] = await db.query("SHOW TABLES LIKE 'users'");
-        if (tables.length === 0) {
-            console.log('No tables found. Running seed script...');
-            const fs = require('fs');
-            const mysql2 = require('mysql2/promise');
-            let seedConfig;
-            if (process.env.MYSQL_URL || process.env.DATABASE_URL) {
-                const dbUrl = new URL(process.env.MYSQL_URL || process.env.DATABASE_URL);
-                seedConfig = {
-                    host: dbUrl.hostname,
-                    port: dbUrl.port,
-                    user: dbUrl.username,
-                    password: dbUrl.password,
-                    database: dbUrl.pathname.replace('/', ''),
-                    multipleStatements: true
-                };
-            } else {
-                seedConfig = {
-                    host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
-                    port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
-                    user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
-                    password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
-                    database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || 'smart_classroom',
-                    multipleStatements: true
-                };
-            }
-            const seedConn = await mysql2.createConnection(seedConfig);
-            const scriptPath = path.join(__dirname, '..', 'database', 'smart_classroom.sql');
-            const script = fs.readFileSync(scriptPath, 'utf8');
-            await seedConn.query(script);
-            await seedConn.end();
+        let needsSeed = false;
+        try {
+            const [rows] = await db.query("SELECT COUNT(*) as cnt FROM users");
+            needsSeed = rows[0].cnt === 0;
+        } catch (e) {
+            // Table doesn't exist yet
+            needsSeed = true;
+        }
+        if (needsSeed) {
+            console.log('No user data found. Running seed script...');
+            await runSeed();
             console.log('Database seeded successfully!');
         } else {
-            console.log('Database tables already exist, skipping seed.');
+            console.log('Database already has data, skipping seed.');
         }
     } catch (err) {
         console.error('Auto-seed error:', err.message);
     }
 };
+
+// Manual seed endpoint (hit /api/seed to force re-seed)
+app.get('/api/seed', async (req, res) => {
+    try {
+        await runSeed();
+        res.json({ success: true, message: 'Database seeded successfully!' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
