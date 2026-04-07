@@ -1,11 +1,11 @@
 const mysql = require('mysql2');
 
 const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || 'localhost',
-  port: process.env.MYSQL_PORT || 3306,
-  user: process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || 'smart_classroom',
+  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
+  port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
+  user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
+  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || 'smart_classroom',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

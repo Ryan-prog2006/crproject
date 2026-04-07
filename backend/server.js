@@ -73,7 +73,35 @@ const autoBackfillAttendance = async () => {
     }
 };
 
+// Auto-seed database if tables don't exist (for Railway deployment)
+const autoSeed = async () => {
+    try {
+        const [tables] = await db.query("SHOW TABLES LIKE 'users'");
+        if (tables.length === 0) {
+            console.log('No tables found. Running seed script...');
+            const fs = require('fs');
+            const mysql2 = require('mysql2/promise');
+            const seedConn = await mysql2.createConnection({
+                host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
+                port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
+                user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
+                password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
+                multipleStatements: true
+            });
+            const scriptPath = path.join(__dirname, '..', 'database', 'smart_classroom.sql');
+            const script = fs.readFileSync(scriptPath, 'utf8');
+            await seedConn.query(script);
+            await seedConn.end();
+            console.log('Database seeded successfully!');
+        } else {
+            console.log('Database tables already exist, skipping seed.');
+        }
+    } catch (err) {
+        console.error('Auto-seed error:', err.message);
+    }
+};
+
 app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  // await autoBackfillAttendance(); // Disabled to preserve manual counts from images
+  await autoSeed();
 });

@@ -4,10 +4,10 @@ const path = require('path');
 
 async function seed() {
     const connection = await mysql.createConnection({
-        host: process.env.MYSQL_HOST || 'localhost',
-        port: process.env.MYSQL_PORT || 3306,
-        user: process.env.MYSQL_USER || 'root',
-        password: process.env.MYSQL_PASSWORD || '',
+        host: process.env.MYSQLHOST || process.env.MYSQL_HOST || 'localhost',
+        port: process.env.MYSQLPORT || process.env.MYSQL_PORT || 3306,
+        user: process.env.MYSQLUSER || process.env.MYSQL_USER || 'root',
+        password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || '',
         multipleStatements: true
     });
     console.log('Connected to MySQL. Running seed script...');
