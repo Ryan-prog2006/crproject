@@ -165,7 +165,7 @@ INSERT INTO timetable (user_id, day, period_no, time_from, time_to, subject_code
 (6, 'Tuesday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0),
 
 -- Wednesday
-(6, 'Wednesday', 1, '09:15:00', '10:15:00', NULL, NULL, 'ALL', 0),
+(6, 'Wednesday', 1, '09:15:00', '10:15:00', 'DHV_T', (SELECT id FROM classrooms WHERE room_name='L-15'), 'ALL', 0),
 (6, 'Wednesday', 2, '10:15:00', '11:15:00', 'DBMS_T', (SELECT id FROM classrooms WHERE room_name='L-15'), 'ALL', 0),
 (6, 'Wednesday', 3, '11:15:00', '12:15:00', 'SM_T', (SELECT id FROM classrooms WHERE room_name='L-15'), 'ALL', 0),
 (6, 'Wednesday', 5, '13:00:00', '14:00:00', 'ML_T', (SELECT id FROM classrooms WHERE room_name='L-15'), 'ALL', 0),
