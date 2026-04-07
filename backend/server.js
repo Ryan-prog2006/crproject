@@ -26,7 +26,15 @@ app.use('/api/attendance', authenticate, attendanceRoutes);
 app.use('/api/dashboard', authenticate, dashboardRoutes);
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use(express.static(path.join(__dirname, '..', 'frontend'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 // Catch-all: serve index.html for any non-API route
 app.get('*', (req, res) => {
