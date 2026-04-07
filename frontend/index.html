@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="smartClassroomApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Smart Classroom NMIMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body class="login-container" ng-controller="loginCtrl">
+    <div class="card login-card">
+        <div class="logo-placeholder">NMIMS</div>
+        <h2>Smart Classroom System</h2>
+        <p>NMIMS Jadcherla</p>
+        <br>
+        <form ng-submit="login()">
+            <input type="text" placeholder="Username (admin/cr/student)" ng-model="username" required>
+            <input type="password" placeholder="Password (admin123/cr123/student123)" ng-model="password" required>
+            <button class="btn btn-primary" type="submit" style="width:100%">Sign In</button>
+        </form>
+        <p class="error" style="color: var(--danger); margin-top: 1rem;" ng-show="error">{{error}}</p>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/services/apiService.js"></script>
+    <script src="js/controllers/loginCtrl.js"></script>
+</body>
+</html>

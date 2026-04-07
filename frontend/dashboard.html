@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="smartClassroomApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Smart Classroom</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="navCtrl">
+    <nav class="navbar">
+        <div class="brand">SmartClass NMIMS</div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="timetable.html">Timetable</a></li>
+            <li><a href="classrooms.html">Classrooms</a></li>
+            <li><a href="progress.html">Progress</a></li>
+            <li><a href="#" ng-click="logout()">Logout</a></li>
+        </ul>
+        <div class="user-info">{{currentUser.name}} ({{currentUser.role | uppercase}})</div>
+    </nav>
+
+    <div class="container" style="padding: 2rem;" ng-controller="dashboardCtrl">
+        <div class="grid grid-4">
+            <div class="card" style="border-left: 5px solid var(--success)">
+                <h4 style="color:var(--success)">Available Classrooms</h4>
+                <h2>{{summary.available_classrooms}} / {{summary.total_classrooms}}</h2>
+            </div>
+            <div class="card" style="border-left: 5px solid var(--danger)">
+                <h4 style="color:var(--danger)">Occupied Classrooms</h4>
+                <h2>{{summary.occupied_classrooms}}</h2>
+            </div>
+            <div class="card" style="border-left: 5px solid var(--info)">
+                <h4 style="color:var(--info)">Total Subjects</h4>
+                <h2>{{summary.subjects.length}}</h2>
+            </div>
+            <div class="card" style="border-left: 5px solid #9b59b6">
+                <h4 style="color:#9b59b6">Overall Progress</h4>
+                <h2>{{summary.overall_progress_percent}}%</h2>
+                <div class="progress-container">
+                    <div class="progress-fill" style="--p-width: {{summary.overall_progress_percent}}%; background:#9b59b6"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 2fr 1fr">
+            <div class="card">
+                <h3>Today's Schedule ({{today | date:'fullDate'}})</h3>
+                <div ng-if="summary.today_schedule.length > 0">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Time</th>
+                                <th>Subject</th>
+                                <th>Room</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="slot in summary.today_schedule" ng-class="{'current-period': isCurrentPeriod(slot)}">
+                                <td>P{{slot.period_no}}</td>
+                                <td>{{slot.time_from.substring(0,5)}} - {{slot.time_to.substring(0,5)}}</td>
+                                <td>
+                                    <span class="badge" style="background: {{slot.color_code || '#7f8c8d'}}">
+                                        {{slot.subject_name || (slot.subject_code ? slot.subject_code : 'Library')}}
+                                    </span>
+                                </td>
+                                <td>{{slot.room_name || '-'}}</td>
+                                <td>
+                                    <button class="btn btn-success btn-sm" ng-if="isAdminOrCR() && slot.subject_code" ng-click="markConducted(slot)">Mark Done</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-if="summary.today_schedule.length == 0" style="padding: 2rem; text-align: center; color: #64748b;">
+                   <p style="font-size: 1.2rem;">All classes are over for today.</p>
+                   <p><small>Next update at 12:00 AM</small></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Subject Progress</h3>
+                <div ng-repeat="group in subjectGroups" style="margin-bottom: 1.5rem; padding-bottom: 10px; border-bottom: 1px solid #eee">
+                    <h5 style="color: {{group.color}}; margin-bottom: 10px">{{group.name}}</h5>
+                    <div ng-repeat="sub in group.tracks" style="margin-bottom: 8px">
+                        <div style="display:flex; justify-content:space-between; font-size: 0.8rem">
+                            <span>{{sub.name.split(' (')[1].replace(')', '')}}</span>
+                            <span>{{sub.completed}}/{{sub.total_required_classes}} hrs</span>
+                        </div>
+                        <div class="progress-container" style="height: 6px">
+                            <div class="progress-fill" style="--p-width: {{sub.percent}}%; background: {{sub.percent > 90 ? 'var(--success)' : (sub.percent > 70 ? 'var(--info)' : 'var(--warning)')}}"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div ng-if="isAdminOrCR()" style="margin-top: 2rem">
+                    <h4>Quick Actions</h4>
+                    <br>
+                    <select ng-model="selectedSubjectCode" style="width:100%; margin-bottom: 10px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- Choose Subject --</option>
+                        <option ng-repeat="sub in summary.subjects" value="{{sub.code}}">{{sub.name}}</option>
+                    </select>
+                    <button class="btn btn-success" style="width:100%; margin-bottom: 10px" ng-click="markAction(selectedSubjectCode, 'conducted')">Mark Class Conducted</button>
+                    <button class="btn btn-danger" style="width:100%; margin-bottom: 10px" ng-click="markAction(selectedSubjectCode, 'cancelled')">Cancel a Class</button>
+                    <button class="btn btn-warning" style="width:100%" ng-click="markAction(selectedSubjectCode, 'extra')">Add Extra Class</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/services/apiService.js"></script>
+    <script src="js/controllers/dashboardCtrl.js"></script>
+</body>
+</html>

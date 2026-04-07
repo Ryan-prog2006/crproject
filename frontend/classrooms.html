@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="smartClassroomApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Classrooms - Smart Classroom</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="navCtrl">
+    <nav class="navbar">
+        <div class="brand">SmartClass NMIMS</div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="timetable.html">Timetable</a></li>
+            <li><a href="classrooms.html">Classrooms</a></li>
+            <li><a href="progress.html">Progress</a></li>
+            <li><a href="#" ng-click="logout()">Logout</a></li>
+        </ul>
+        <div class="user-info">{{currentUser.name}} ({{currentUser.role | uppercase}})</div>
+    </nav>
+
+    <div class="container" style="padding: 2rem;" ng-controller="classroomCtrl">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem">
+            <h2>Classroom Availability – Real Time</h2>
+            <div>
+                <button class="btn" ng-class="filter==='all'?'btn-primary':''" ng-click="filter='all'">All</button>
+                <button class="btn" ng-class="filter==='available'?'btn-primary':''" ng-click="filter='available'">Available</button>
+                <button class="btn" ng-class="filter==='occupied'?'btn-primary':''" ng-click="filter='occupied'">Occupied</button>
+                <button class="btn" ng-class="filter==='labs'?'btn-primary':''" ng-click="filter='labs'">Labs</button>
+                <button class="btn" ng-class="filter==='theory'?'btn-primary':''" ng-click="filter='theory'">Theory Rooms</button>
+            </div>
+        </div>
+
+        <div class="grid grid-5">
+            <div class="card classroom-card" ng-repeat="room in rooms | filter:filterRooms" 
+                 ng-click="openModal(room)"
+                 style="border-top: 5px solid {{room.status === 'available' ? 'var(--success)' : 'var(--danger)'}}">
+                <div style="display:flex; justify-content:space-between">
+                   <strong>{{room.room_name}}</strong>
+                   <small>{{room.floor}} Floor</small>
+                </div>
+                <br>
+                <span class="badge" ng-style="{'background': room.status === 'available' ? 'var(--success)' : 'var(--danger)'}">
+                    {{room.status | uppercase}}
+                </span>
+                <p ng-show="room.status === 'occupied'" style="margin-top: 10px">
+                    <span class="badge badge-info" style="background:#34495e">{{room.occupied_by}}</span>
+                </p>
+                <div style="margin-top:10px; font-size:0.8rem; color:#666">Capacity: {{room.capacity}}</div>
+            </div>
+        </div>
+
+        <!-- Room Modal -->
+        <div class="modal-overlay" ng-if="showModal">
+            <div class="modal-content">
+                <h3>Room Details: {{selectedRoom.room_name}}</h3>
+                <br>
+                <p>Floor: {{selectedRoom.floor}}</p>
+                <p>Capacity: {{selectedRoom.capacity}}</p>
+                <br>
+                <div ng-if="isAdminOrCR()">
+                    <label>Status:</label>
+                    <select ng-model="selectedRoom.status">
+                        <option value="available">Available</option>
+                        <option value="occupied">Occupied</option>
+                    </select>
+                    <br><br>
+                    <div ng-show="selectedRoom.status === 'occupied'">
+                        <label>Occupied By:</label>
+                        <select ng-model="selectedRoom.occupied_by">
+                            <option value="SOL">SOL</option>
+                            <option value="STME">STME</option>
+                            <option value="SOC">SOC</option>
+                            <option value="SPTM">SPTM</option>
+                            <option value="SBM">SBM</option>
+                            <option value="EXTRAS">EXTRAS</option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <div style="display:flex; gap: 10px">
+                    <button class="btn btn-success" ng-if="isAdminOrCR()" ng-click="updateStatus()">Save</button>
+                    <button class="btn btn-danger" ng-click="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/services/apiService.js"></script>
+    <script src="js/controllers/classroomCtrl.js"></script>
+</body>
+</html>
