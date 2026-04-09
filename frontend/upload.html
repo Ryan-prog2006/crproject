@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="smartClassroomApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Data - Smart Classroom</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="navCtrl">
+    <nav class="navbar">
+        <div class="brand">SmartClass NMIMS</div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="timetable.html">Timetable</a></li>
+            <li><a href="classrooms.html">Classrooms</a></li>
+            <li><a href="progress.html">Progress</a></li>
+            <li ng-if="isAdminOrCR()"><a href="upload.html" class="nav-active">Upload</a></li>
+            <li><a href="#" ng-click="logout()">Logout</a></li>
+        </ul>
+        <div class="user-info">{{currentUser.name}} ({{currentUser.role | uppercase}})</div>
+    </nav>
+
+    <div class="container" style="padding: 2rem;" ng-controller="uploadCtrl">
+        <h2 style="margin-bottom: 0.5rem;">📤 Upload Data</h2>
+        <p style="color: #64748b; margin-bottom: 2rem;">Bulk upload timetable, subjects, and classrooms via CSV files</p>
+
+        <!-- Status Toast -->
+        <div class="upload-toast" ng-if="toast.show" ng-class="{'toast-success': toast.type === 'success', 'toast-error': toast.type === 'error'}">
+            <span ng-if="toast.type === 'success'">✅</span>
+            <span ng-if="toast.type === 'error'">❌</span>
+            {{toast.message}}
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="upload-tabs">
+            <button class="upload-tab" ng-class="{'upload-tab-active': activeTab === 'timetable'}" ng-click="activeTab = 'timetable'">
+                📅 Timetable & Subjects
+            </button>
+            <button class="upload-tab" ng-class="{'upload-tab-active': activeTab === 'classrooms'}" ng-click="activeTab = 'classrooms'">
+                🏫 Classrooms
+            </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- TIMETABLE + SUBJECTS UPLOAD TAB -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div ng-show="activeTab === 'timetable'">
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+                <!-- Subjects Upload -->
+                <div class="card upload-card">
+                    <div class="upload-card-header">
+                        <h3>📚 Step 1: Upload Subjects</h3>
+                        <span class="upload-step-badge">Required</span>
+                    </div>
+                    <p style="color:#64748b; font-size: 0.85rem; margin-bottom: 1rem;">
+                        Upload a CSV with your subjects, faculty, and total hours.
+                    </p>
+
+                    <!-- Drop Zone -->
+                    <div class="drop-zone" id="subjectDropZone"
+                         ondragover="event.preventDefault(); this.classList.add('drop-zone-hover')"
+                         ondragleave="this.classList.remove('drop-zone-hover')"
+                         ng-class="{'drop-zone-loaded': subjectFile}">
+                        <div ng-if="!subjectFile">
+                            <div class="drop-zone-icon">📄</div>
+                            <p>Drag & drop your <strong>Subjects CSV</strong> here</p>
+                            <p style="color:#94a3b8; font-size:0.8rem">or click to browse</p>
+                            <input type="file" accept=".csv" class="drop-zone-input" id="subjectFileInput"
+                                   onchange="angular.element(this).scope().onSubjectFileSelect(this.files[0])">
+                        </div>
+                        <div ng-if="subjectFile" style="text-align:center">
+                            <div class="drop-zone-icon">✅</div>
+                            <p><strong>{{subjectFile.name}}</strong></p>
+                            <p style="color:#64748b">{{subjectData.length}} subjects loaded</p>
+                            <button class="btn btn-danger btn-sm" style="margin-top: 8px" ng-click="clearSubjects()">Remove</button>
+                        </div>
+                    </div>
+
+                    <!-- CSV Format Guide -->
+                    <details class="csv-guide">
+                        <summary>📋 CSV Format Guide</summary>
+                        <p>Required columns:</p>
+                        <code>code, name, faculty, total_required_classes, completed_classes, color_code</code>
+                        <p style="margin-top: 8px; font-size:0.75rem; color:#94a3b8">
+                            Example: <br>
+                            <code>DBMS_T,"Database Management System (T)","Prof. Tasneem",30,0,#9b59b6</code>
+                        </p>
+                    </details>
+
+                    <!-- Preview Table -->
+                    <div ng-if="subjectData.length > 0" class="preview-section">
+                        <h4>Preview ({{subjectData.length}} subjects)</h4>
+                        <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Faculty</th>
+                                        <th>Total Hrs</th>
+                                        <th>Done</th>
+                                        <th>Color</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="s in subjectData">
+                                        <td><strong>{{s.code}}</strong></td>
+                                        <td>{{s.name}}</td>
+                                        <td>{{s.faculty}}</td>
+                                        <td>{{s.total_required_classes}}</td>
+                                        <td>{{s.completed_classes}}</td>
+                                        <td><span class="color-dot" style="background:{{s.color_code}}"></span> {{s.color_code}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timetable Upload -->
+                <div class="card upload-card">
+                    <div class="upload-card-header">
+                        <h3>📅 Step 2: Upload Timetable</h3>
+                        <span class="upload-step-badge">Required</span>
+                    </div>
+                    <p style="color:#64748b; font-size: 0.85rem; margin-bottom: 1rem;">
+                        Upload a CSV with your weekly timetable schedule.
+                    </p>
+
+                    <!-- Drop Zone -->
+                    <div class="drop-zone" id="timetableDropZone"
+                         ondragover="event.preventDefault(); this.classList.add('drop-zone-hover')"
+                         ondragleave="this.classList.remove('drop-zone-hover')"
+                         ng-class="{'drop-zone-loaded': timetableFile}">
+                        <div ng-if="!timetableFile">
+                            <div class="drop-zone-icon">📅</div>
+                            <p>Drag & drop your <strong>Timetable CSV</strong> here</p>
+                            <p style="color:#94a3b8; font-size:0.8rem">or click to browse</p>
+                            <input type="file" accept=".csv" class="drop-zone-input" id="timetableFileInput"
+                                   onchange="angular.element(this).scope().onTimetableFileSelect(this.files[0])">
+                        </div>
+                        <div ng-if="timetableFile" style="text-align:center">
+                            <div class="drop-zone-icon">✅</div>
+                            <p><strong>{{timetableFile.name}}</strong></p>
+                            <p style="color:#64748b">{{timetableData.length}} slots loaded</p>
+                            <button class="btn btn-danger btn-sm" style="margin-top: 8px" ng-click="clearTimetable()">Remove</button>
+                        </div>
+                    </div>
+
+                    <!-- CSV Format Guide -->
+                    <details class="csv-guide">
+                        <summary>📋 CSV Format Guide</summary>
+                        <p>Required columns:</p>
+                        <code>day, period_no, time_from, time_to, subject_code, room_name, batch, is_lab</code>
+                        <p style="margin-top: 8px; font-size:0.75rem; color:#94a3b8">
+                            Example: <br>
+                            <code>Monday,1,09:15,10:15,DBMS_T,L-15,ALL,0</code>
+                        </p>
+                    </details>
+
+                    <!-- Preview Table -->
+                    <div ng-if="timetableData.length > 0" class="preview-section">
+                        <h4>Preview ({{timetableData.length}} slots)</h4>
+                        <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Period</th>
+                                        <th>Time</th>
+                                        <th>Subject</th>
+                                        <th>Room</th>
+                                        <th>Batch</th>
+                                        <th>Lab?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="t in timetableData">
+                                        <td>{{t.day}}</td>
+                                        <td>P{{t.period_no}}</td>
+                                        <td>{{t.time_from}} - {{t.time_to}}</td>
+                                        <td>{{t.subject_code || 'Library'}}</td>
+                                        <td>{{t.room_name || '-'}}</td>
+                                        <td>{{t.batch}}</td>
+                                        <td>{{t.is_lab ? '✅' : '—'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Button -->
+            <div class="card" style="text-align: center; margin-top: 1rem;" ng-if="subjectData.length > 0 && timetableData.length > 0">
+                <div class="upload-summary">
+                    <div><strong>📚 {{subjectData.length}}</strong> subjects</div>
+                    <div style="color:#ccc; font-size:1.5rem">+</div>
+                    <div><strong>📅 {{timetableData.length}}</strong> timetable slots</div>
+                    <div style="color:#ccc; font-size:1.5rem">→</div>
+                    <div><strong>🗄️</strong> Database</div>
+                </div>
+                <br>
+                <div ng-if="uploading" class="upload-progress">
+                    <div class="upload-spinner"></div>
+                    <span>Uploading... Please wait</span>
+                </div>
+                <button class="btn btn-success btn-lg" ng-click="uploadTimetable()" ng-disabled="uploading" ng-if="!uploading">
+                    🚀 Upload to Database
+                </button>
+                <p style="color:#94a3b8; font-size: 0.75rem; margin-top: 10px" ng-if="!uploading">
+                    ⚠️ This will replace your existing timetable & subjects data
+                </p>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- CLASSROOMS UPLOAD TAB -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div ng-show="activeTab === 'classrooms'">
+            <div class="card upload-card" style="max-width: 600px;">
+                <div class="upload-card-header">
+                    <h3>🏫 Upload Classrooms</h3>
+                    <span class="upload-step-badge badge-info">Bulk Add</span>
+                </div>
+                <p style="color:#64748b; font-size: 0.85rem; margin-bottom: 1rem;">
+                    Upload a CSV to bulk-add classrooms. Duplicates will be skipped automatically.
+                </p>
+
+                <!-- Drop Zone -->
+                <div class="drop-zone" id="classroomDropZone"
+                     ondragover="event.preventDefault(); this.classList.add('drop-zone-hover')"
+                     ondragleave="this.classList.remove('drop-zone-hover')"
+                     ng-class="{'drop-zone-loaded': classroomFile}">
+                    <div ng-if="!classroomFile">
+                        <div class="drop-zone-icon">🏫</div>
+                        <p>Drag & drop your <strong>Classrooms CSV</strong> here</p>
+                        <p style="color:#94a3b8; font-size:0.8rem">or click to browse</p>
+                        <input type="file" accept=".csv" class="drop-zone-input" id="classroomFileInput"
+                               onchange="angular.element(this).scope().onClassroomFileSelect(this.files[0])">
+                    </div>
+                    <div ng-if="classroomFile" style="text-align:center">
+                        <div class="drop-zone-icon">✅</div>
+                        <p><strong>{{classroomFile.name}}</strong></p>
+                        <p style="color:#64748b">{{classroomData.length}} classrooms loaded</p>
+                        <button class="btn btn-danger btn-sm" style="margin-top: 8px" ng-click="clearClassrooms()">Remove</button>
+                    </div>
+                </div>
+
+                <!-- CSV Format Guide -->
+                <details class="csv-guide">
+                    <summary>📋 CSV Format Guide</summary>
+                    <p>Required columns:</p>
+                    <code>room_name, floor, capacity</code>
+                    <p style="margin-top: 8px; font-size:0.75rem; color:#94a3b8">
+                        Example: <br>
+                        <code>L-01,3rd,60</code><br>
+                        <code>LAB-1,2nd,30</code><br>
+                        <code>S-01,Ground,150</code>
+                    </p>
+                </details>
+
+                <!-- Preview Table -->
+                <div ng-if="classroomData.length > 0" class="preview-section">
+                    <h4>Preview ({{classroomData.length}} classrooms)</h4>
+                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Room Name</th>
+                                    <th>Floor</th>
+                                    <th>Capacity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="c in classroomData">
+                                    <td><strong>{{c.room_name}}</strong></td>
+                                    <td>{{c.floor}}</td>
+                                    <td>{{c.capacity}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Upload Button -->
+                <div style="text-align: center; margin-top: 1.5rem;" ng-if="classroomData.length > 0">
+                    <div ng-if="uploading" class="upload-progress">
+                        <div class="upload-spinner"></div>
+                        <span>Uploading... Please wait</span>
+                    </div>
+                    <button class="btn btn-success btn-lg" ng-click="uploadClassrooms()" ng-disabled="uploading" ng-if="!uploading">
+                        🚀 Upload {{classroomData.length}} Classrooms
+                    </button>
+                    <p style="color:#94a3b8; font-size: 0.75rem; margin-top: 10px" ng-if="!uploading">
+                        Duplicate room names will be automatically skipped
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- DOWNLOAD TEMPLATES SECTION -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div class="card" style="margin-top: 2rem; background: linear-gradient(135deg, #f8fafc, #eef2ff); border: 1px dashed #c7d2fe;">
+            <h3 style="color: var(--info);">📥 Download CSV Templates</h3>
+            <p style="color: #64748b; margin-bottom: 1rem; font-size: 0.85rem;">
+                Not sure about the format? Download these ready-to-fill templates.
+            </p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" ng-click="downloadTemplate('subjects')">📚 Subjects Template</button>
+                <button class="btn btn-primary" ng-click="downloadTemplate('timetable')">📅 Timetable Template</button>
+                <button class="btn btn-primary" ng-click="downloadTemplate('classrooms')">🏫 Classrooms Template</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/services/apiService.js"></script>
+    <script src="js/controllers/uploadCtrl.js"></script>
+</body>
+</html>

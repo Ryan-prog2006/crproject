@@ -53,4 +53,17 @@ router.get('/summary', async (req, res) => {
   }
 });
 
+// Get list of all CRs (for admin reset feature)
+router.get('/cr-list', async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Admin only' });
+        }
+        const [rows] = await db.query('SELECT id, name, username FROM users WHERE role = "cr"');
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

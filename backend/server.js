@@ -10,6 +10,7 @@ const timetableRoutes = require('./routes/timetable');
 const subjectRoutes = require('./routes/subjects');
 const attendanceRoutes = require('./routes/attendance');
 const dashboardRoutes = require('./routes/dashboard');
+const uploadRoutes = require('./routes/upload');
 const authenticate = require('./middleware/auth');
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/timetable', authenticate, timetableRoutes);
 app.use('/api/subjects', authenticate, subjectRoutes);
 app.use('/api/attendance', authenticate, attendanceRoutes);
 app.use('/api/dashboard', authenticate, dashboardRoutes);
+app.use('/api/upload', authenticate, uploadRoutes);
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '..', 'frontend'), {

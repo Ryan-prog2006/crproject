@@ -14,6 +14,7 @@
             <li><a href="timetable.html">Timetable</a></li>
             <li><a href="classrooms.html">Classrooms</a></li>
             <li><a href="progress.html">Progress</a></li>
+            <li ng-if="isAdminOrCR()"><a href="upload.html">Upload</a></li>
             <li><a href="#" ng-click="logout()">Logout</a></li>
         </ul>
         <div class="user-info">{{currentUser.name}} ({{currentUser.role | uppercase}})</div>
@@ -104,6 +105,20 @@
                     <button class="btn btn-success" style="width:100%; margin-bottom: 10px" ng-click="markAction(selectedSubjectCode, 'conducted')">Mark Class Conducted</button>
                     <button class="btn btn-danger" style="width:100%; margin-bottom: 10px" ng-click="markAction(selectedSubjectCode, 'cancelled')">Cancel a Class</button>
                     <button class="btn btn-warning" style="width:100%" ng-click="markAction(selectedSubjectCode, 'extra')">Add Extra Class</button>
+                </div>
+
+                <!-- Semester Reset (Admin Only) -->
+                <div ng-if="currentUser.role === 'admin'" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px dashed #fee2e2;">
+                    <h4 style="color: var(--danger);">🔄 Semester Reset</h4>
+                    <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Clear a CR's data when semester ends</p>
+                    <select ng-model="selectedResetCR" style="width:100%; margin-bottom: 10px; padding: 0.5rem; border: 1px solid #fca5a5; border-radius: 4px; background: #fff5f5;">
+                        <option value="">-- Select CR --</option>
+                        <option ng-repeat="cr in crList" value="{{cr.id}}">{{cr.name}} ({{cr.username}})</option>
+                    </select>
+                    <button class="btn btn-reset" style="width:100%" ng-click="resetCRData()" ng-disabled="!selectedResetCR || resetting">
+                        <span ng-if="!resetting">⚠️ Reset CR Data</span>
+                        <span ng-if="resetting">Resetting...</span>
+                    </button>
                 </div>
             </div>
         </div>

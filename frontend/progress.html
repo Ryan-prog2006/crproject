@@ -14,6 +14,7 @@
             <li><a href="timetable.html">Timetable</a></li>
             <li><a href="classrooms.html">Classrooms</a></li>
             <li><a href="progress.html">Progress</a></li>
+            <li ng-if="isAdminOrCR()"><a href="upload.html">Upload</a></li>
             <li><a href="#" ng-click="logout()">Logout</a></li>
         </ul>
         <div class="user-info">{{currentUser.name}} ({{currentUser.role | uppercase}})</div>

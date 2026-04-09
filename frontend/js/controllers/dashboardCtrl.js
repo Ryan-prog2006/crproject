@@ -2,6 +2,9 @@
 app.controller('dashboardCtrl', ['$scope', 'apiService', function($scope, apiService) {
     $scope.summary = {};
     $scope.today = new Date();
+    $scope.crList = [];
+    $scope.selectedResetCR = '';
+    $scope.resetting = false;
 
     $scope.loadDashboard = function() {
         apiService.get('/dashboard/summary').then(function(res) {
@@ -18,6 +21,16 @@ app.controller('dashboardCtrl', ['$scope', 'apiService', function($scope, apiSer
             });
             $scope.subjectGroups = Object.values(groups);
         });
+    };
+
+    // Load CR list for admin reset feature
+    $scope.loadCRList = function() {
+        var user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.role === 'admin') {
+            apiService.get('/dashboard/cr-list').then(function(res) {
+                $scope.crList = res.data;
+            });
+        }
     };
 
     $scope.isCurrentPeriod = function(period) {
@@ -56,5 +69,29 @@ app.controller('dashboardCtrl', ['$scope', 'apiService', function($scope, apiSer
         });
     };
 
+    // Semester Reset
+    $scope.resetCRData = function() {
+        if (!$scope.selectedResetCR) return alert('Please select a CR first');
+
+        var selectedCR = $scope.crList.find(function(cr) { return cr.id == $scope.selectedResetCR; });
+        var crName = selectedCR ? selectedCR.name : 'this CR';
+
+        if (!confirm('⚠️ WARNING: This will permanently delete ALL data for ' + crName + ' (subjects, timetable, attendance).\n\nThis action CANNOT be undone.\n\nAre you sure?')) return;
+        if (!confirm('Final confirmation: Reset ALL data for ' + crName + '?')) return;
+
+        $scope.resetting = true;
+        apiService.post('/upload/reset/' + $scope.selectedResetCR, {}).then(function(res) {
+            $scope.resetting = false;
+            alert('✅ ' + res.data.message);
+            $scope.selectedResetCR = '';
+            $scope.loadDashboard();
+        }, function(err) {
+            $scope.resetting = false;
+            alert('❌ Reset failed: ' + (err.data ? err.data.error : err.statusText));
+        });
+    };
+
     $scope.loadDashboard();
+    $scope.loadCRList();
 }]);
+
