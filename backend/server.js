@@ -38,10 +38,7 @@ app.use(express.static(path.join(__dirname, '..', 'frontend'), {
   }
 }));
 
-// Catch-all: serve index.html for any non-API route
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
-});
+
 
 // Attendance Auto-Calculation Logic on startup
 const autoBackfillAttendance = async () => {
@@ -139,6 +136,11 @@ app.get('/api/seed', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// Catch-all: serve index.html for any non-API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
 });
 
 app.listen(PORT, async () => {

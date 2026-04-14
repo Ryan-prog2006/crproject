@@ -64,7 +64,7 @@
                         <td class="time-col">{{periodLabels[p].from}}</td>
                         <td class="time-col">{{periodLabels[p].to}}</td>
                         <td ng-repeat="day in days" ng-class="{'library-slot': getSlot(day, p).length == 0}">
-                             <div ng-repeat="slot in getSlot(day, p)" class="slot-container" ng-class="{'lab-slot': slot.is_lab, 'highlight-red': slot.subject_code == 'ML_T' || slot.subject_code == 'ML_P1' || slot.subject_code == 'SM_P2'}">
+                             <div ng-repeat="slot in getSlot(day, p)" class="slot-container" ng-class="{'lab-slot': slot.is_lab, 'highlight-red': slot.subject_code == 'ML_T' || slot.subject_code == 'ML_P1' || slot.subject_code == 'SM_P2' || slot.subject_code == 'TII_P1' || slot.subject_code == 'ES_T'}">
                                 <strong>{{slot.subject_name || (slot.subject_code ? slot.subject_code : 'Library')}}</strong>
                                 <span ng-if="slot.batch != 'ALL'">- {{slot.batch}}</span>
                                 <div class="slot-meta" ng-if="slot.room_name">
