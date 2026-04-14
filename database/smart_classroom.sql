@@ -276,3 +276,81 @@ INSERT INTO timetable (user_id, day, period_no, time_from, time_to, subject_code
 (2, 'Saturday', 5, '13:00:00', '14:00:00', 'CLUBS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Saturday', 6, '14:00:00', '15:00:00', 'CLUBS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Saturday', 7, '15:00:00', '16:00:00', 'CLUBS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0);
+-- Seed Subjects for CR 2 (user_id = 3)
+INSERT INTO subjects (user_id, code, name, faculty, total_required_classes, completed_classes, color_code) VALUES 
+(3, 'LADE_T', 'Linear Algebra & Diff. Equations (T)', 'Dr. Amit Saini', 45, 0, '#3498db'),
+(3, 'LADE_P1', 'Linear Algebra & Diff. Equations (B1)', 'Dr. Amit Saini', 30, 0, '#3498db'),
+(3, 'LADE_P2', 'Linear Algebra & Diff. Equations (B2)', 'Dr. Amit Saini', 30, 0, '#3498db'),
+(3, 'QP_T', 'Quantum Physics (T)', 'Dr. Soumyajit Seth', 30, 0, '#9b59b6'),
+(3, 'QP_P1', 'Quantum Physics (B1)', 'Dr. Soumyajit Seth', 30, 0, '#9b59b6'),
+(3, 'QP_P2', 'Quantum Physics (B2)', 'Dr. Soumyajit Seth', 30, 0, '#9b59b6'),
+(3, 'EOB_T', 'Elements of Biology (T)', 'Prof. Sharon Blessy', 30, 0, '#2ecc71'),
+(3, 'EOB_P1', 'Elements of Biology (B1)', 'Prof. Neha Maheshwari', 15, 0, '#2ecc71'),
+(3, 'EOB_P2', 'Elements of Biology (B2)', 'Prof. Neha Maheshwari', 15, 0, '#2ecc71'),
+(3, 'MAE_T', 'Management Accounting (T)', 'Dr. Mubashir Hassan', 30, 0, '#e74c3c'),
+(3, 'OOP_T', 'Object Oriented Programming (T)', 'Dr. Vidyasagar Voorugonda', 30, 0, '#f39c12'),
+(3, 'OOP_P1', 'Object Oriented Programming (B1)', 'Dr. Vidyasagar Voorugonda', 30, 0, '#f39c12'),
+(3, 'OOP_P2', 'Object Oriented Programming (B2)', 'Dr. Vidyasagar Voorugonda', 30, 0, '#f39c12'),
+(3, 'PR_T', 'Product Realization (T)', 'Prof. Chandrakant Wani', 15, 0, '#1abc9c'),
+(3, 'PR_P1', 'Product Realization (B1)', 'Prof. Chandrakant Wani', 30, 0, '#1abc9c'),
+(3, 'PR_P2', 'Product Realization (B2)', 'Prof. Chandrakant Wani', 30, 0, '#1abc9c'),
+(3, 'TII_P1', 'Transforming Ideas to Innovation (B1)', 'Dr. Mubashir Hassan', 30, 0, '#d35400'),
+(3, 'TII_P2', 'Transforming Ideas to Innovation (B2)', 'Dr. Mubashir Hassan', 30, 0, '#d35400'),
+(3, 'EC_P1', 'English Communication (B1)', 'Dr. Rocharla Rohith', 30, 0, '#34495e'),
+(3, 'EC_P2', 'English Communication (B2)', 'Dr. Rocharla Rohith', 30, 0, '#34495e'),
+(3, 'ES_T', 'Environmental Science (T)', 'Dr. Akshita Dwivedi', 15, 0, '#c0392b');
+
+-- Seed Timetable Slots for CR 2
+INSERT INTO timetable (user_id, day, period_no, time_from, time_to, subject_code, room_id, batch, is_lab) VALUES 
+-- Monday
+(3, 'Monday', 1, '09:15:00', '10:15:00', 'ES_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Monday', 2, '10:15:00', '11:15:00', 'LADE_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Monday', 3, '11:15:00', '12:15:00', 'OOP_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Monday', 5, '13:00:00', '14:00:00', 'EOB_P2', (SELECT id FROM classrooms WHERE room_name='L-18'), 'B2', 1),
+(3, 'Monday', 6, '14:00:00', '15:00:00', 'PR_P1', (SELECT id FROM classrooms WHERE room_name='LAB-4'), 'B1', 1),
+(3, 'Monday', 7, '15:00:00', '16:00:00', 'PR_P1', (SELECT id FROM classrooms WHERE room_name='LAB-4'), 'B1', 1),
+(3, 'Monday', 7, '15:00:00', '16:00:00', 'EC_P2', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'B2', 1),
+(3, 'Monday', 8, '16:00:00', '17:00:00', 'EC_P2', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'B2', 1),
+
+-- Tuesday
+(3, 'Tuesday', 1, '09:15:00', '10:15:00', NULL, NULL, 'ALL', 0),
+(3, 'Tuesday', 2, '10:15:00', '11:15:00', 'LADE_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Tuesday', 3, '11:15:00', '12:15:00', 'OOP_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Tuesday', 5, '13:00:00', '14:00:00', 'EC_P1', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'B1', 1),
+(3, 'Tuesday', 6, '14:00:00', '15:00:00', 'OOP_P2', (SELECT id FROM classrooms WHERE room_name='LAB-1'), 'B2', 1),
+(3, 'Tuesday', 7, '15:00:00', '16:00:00', 'EOB_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Tuesday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0),
+
+-- Wednesday
+(3, 'Wednesday', 1, '09:15:00', '10:15:00', NULL, NULL, 'ALL', 0),
+(3, 'Wednesday', 2, '10:15:00', '11:15:00', 'MAE_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Wednesday', 3, '11:15:00', '12:15:00', 'MAE_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Wednesday', 5, '13:00:00', '14:00:00', 'PR_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Wednesday', 6, '14:00:00', '15:00:00', 'LADE_P1', (SELECT id FROM classrooms WHERE room_name='LAB-2'), 'B1', 1),
+(3, 'Wednesday', 7, '15:00:00', '16:00:00', 'LADE_P1', (SELECT id FROM classrooms WHERE room_name='LAB-2'), 'B1', 1),
+(3, 'Wednesday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0),
+
+-- Thursday
+(3, 'Thursday', 1, '09:15:00', '10:15:00', 'QP_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Thursday', 2, '10:15:00', '11:15:00', 'QP_P1', (SELECT id FROM classrooms WHERE room_name='PHYS. LAB'), 'B1', 1),
+(3, 'Thursday', 2, '10:15:00', '11:15:00', 'TII_P2', (SELECT id FROM classrooms WHERE room_name='LAB-3'), 'B2', 1),
+(3, 'Thursday', 3, '11:15:00', '12:15:00', 'QP_P1', (SELECT id FROM classrooms WHERE room_name='PHYS. LAB'), 'B1', 1),
+(3, 'Thursday', 3, '11:15:00', '12:15:00', 'TII_P2', (SELECT id FROM classrooms WHERE room_name='LAB-3'), 'B2', 1),
+(3, 'Thursday', 5, '13:00:00', '14:00:00', 'PR_P2', (SELECT id FROM classrooms WHERE room_name='LAB-4'), 'B2', 1),
+(3, 'Thursday', 6, '14:00:00', '15:00:00', 'EOB_P1', (SELECT id FROM classrooms WHERE room_name='L-18'), 'B1', 1),
+(3, 'Thursday', 6, '14:00:00', '15:00:00', 'PR_P2', (SELECT id FROM classrooms WHERE room_name='LAB-4'), 'B2', 1),
+(3, 'Thursday', 7, '15:00:00', '16:00:00', NULL, NULL, 'ALL', 0),
+(3, 'Thursday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0),
+
+-- Friday
+(3, 'Friday', 1, '09:15:00', '10:15:00', 'EOB_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Friday', 2, '10:15:00', '11:15:00', 'TII_P1', (SELECT id FROM classrooms WHERE room_name='LAB-3'), 'B1', 1),
+(3, 'Friday', 2, '10:15:00', '11:15:00', 'LADE_P2', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'B2', 1),
+(3, 'Friday', 3, '11:15:00', '12:15:00', 'TII_P1', (SELECT id FROM classrooms WHERE room_name='LAB-3'), 'B1', 1),
+(3, 'Friday', 3, '11:15:00', '12:15:00', 'LADE_P2', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'B2', 1),
+(3, 'Friday', 5, '13:00:00', '14:00:00', 'LADE_T', (SELECT id FROM classrooms WHERE room_name='L-18'), 'ALL', 0),
+(3, 'Friday', 6, '14:00:00', '15:00:00', 'QP_P2', (SELECT id FROM classrooms WHERE room_name='PHYS. LAB'), 'B2', 1),
+(3, 'Friday', 6, '14:00:00', '15:00:00', 'OOP_P1', (SELECT id FROM classrooms WHERE room_name='LAB-2'), 'B1', 1),
+(3, 'Friday', 7, '15:00:00', '16:00:00', 'QP_P2', (SELECT id FROM classrooms WHERE room_name='PHYS. LAB'), 'B2', 1),
+(3, 'Friday', 7, '15:00:00', '16:00:00', 'OOP_P1', (SELECT id FROM classrooms WHERE room_name='LAB-2'), 'B1', 1),
+(3, 'Friday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0);
