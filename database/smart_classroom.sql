@@ -227,29 +227,29 @@ INSERT INTO timetable (user_id, day, period_no, time_from, time_to, subject_code
 -- Monday
 (2, 'Monday', 1, '09:15:00', '10:15:00', 'TII_P1', (SELECT id FROM classrooms WHERE room_name='BEEE LAB'), 'A1', 1),
 (2, 'Monday', 2, '10:15:00', '11:15:00', 'TII_P1', (SELECT id FROM classrooms WHERE room_name='BEEE LAB'), 'A1', 1),
-(2, 'Monday', 3, '11:15:00', '12:15:00', 'MAE_T', NULL, 'ALL', 0),
-(2, 'Monday', 5, '13:00:00', '14:00:00', 'OOP_T', NULL, 'ALL', 0),
-(2, 'Monday', 6, '14:00:00', '15:00:00', 'QP_T', NULL, 'ALL', 0),
+(2, 'Monday', 3, '11:15:00', '12:15:00', 'MAE_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Monday', 5, '13:00:00', '14:00:00', 'OOP_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Monday', 6, '14:00:00', '15:00:00', 'QP_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Monday', 7, '15:00:00', '16:00:00', 'QP_P1', (SELECT id FROM classrooms WHERE room_name='PHYS. LAB'), 'A1', 1),
 (2, 'Monday', 8, '16:00:00', '17:00:00', 'OOP_P2', (SELECT id FROM classrooms WHERE room_name='LAB-3'), 'A2', 1),
 
 -- Tuesday
-(2, 'Tuesday', 1, '09:15:00', '10:15:00', 'QP_T', NULL, 'ALL', 0),
-(2, 'Tuesday', 2, '10:15:00', '11:15:00', 'LADE_T', NULL, 'ALL', 0),
-(2, 'Tuesday', 3, '11:15:00', '12:15:00', 'EOB_T', NULL, 'ALL', 0),
-(2, 'Tuesday', 5, '13:00:00', '14:00:00', 'OOP_T', NULL, 'ALL', 0),
+(2, 'Tuesday', 1, '09:15:00', '10:15:00', 'QP_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Tuesday', 2, '10:15:00', '11:15:00', 'LADE_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Tuesday', 3, '11:15:00', '12:15:00', 'EOB_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Tuesday', 5, '13:00:00', '14:00:00', 'OOP_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Tuesday', 6, '14:00:00', '15:00:00', NULL, NULL, 'ALL', 0),
 (2, 'Tuesday', 7, '15:00:00', '16:00:00', 'QP_P2', (SELECT id FROM classrooms WHERE room_name='PHYS. LAB'), 'A2', 1),
 (2, 'Tuesday', 8, '16:00:00', '17:00:00', 'OOP_P1', (SELECT id FROM classrooms WHERE room_name='LAB-3'), 'A1', 1),
 
 -- Wednesday
-(2, 'Wednesday', 1, '09:15:00', '10:15:00', 'MAE_T', NULL, 'ALL', 0),
-(2, 'Wednesday', 2, '10:15:00', '11:15:00', 'ES_T', NULL, 'ALL', 0),
-(2, 'Wednesday', 3, '11:15:00', '12:15:00', 'PR_T', NULL, 'ALL', 0),
+(2, 'Wednesday', 1, '09:15:00', '10:15:00', 'MAE_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Wednesday', 2, '10:15:00', '11:15:00', 'ES_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Wednesday', 3, '11:15:00', '12:15:00', 'PR_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Wednesday', 5, '13:00:00', '14:00:00', 'EC_P2', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'A2', 1),
 (2, 'Wednesday', 6, '14:00:00', '15:00:00', 'EC_P2', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'A2', 1),
 (2, 'Wednesday', 7, '15:00:00', '16:00:00', NULL, NULL, 'ALL', 0),
-(2, 'Wednesday', 8, '16:00:00', '17:00:00', 'LADE_T', NULL, 'ALL', 0),
+(2, 'Wednesday', 8, '16:00:00', '17:00:00', 'LADE_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 
 -- Thursday
 (2, 'Thursday', 1, '09:15:00', '10:15:00', NULL, NULL, 'ALL', 0),
@@ -257,22 +257,22 @@ INSERT INTO timetable (user_id, day, period_no, time_from, time_to, subject_code
 (2, 'Thursday', 3, '11:15:00', '12:15:00', 'PR_P2', (SELECT id FROM classrooms WHERE room_name='LAB-4'), 'A2', 1),
 (2, 'Thursday', 5, '13:00:00', '14:00:00', 'TII_P2', (SELECT id FROM classrooms WHERE room_name='LAB-1'), 'A2', 1),
 (2, 'Thursday', 6, '14:00:00', '15:00:00', 'EC_P1', (SELECT id FROM classrooms WHERE room_name='LAB-5'), 'A1', 1),
-(2, 'Thursday', 7, '15:00:00', '16:00:00', 'EOB_T', NULL, 'ALL', 0),
+(2, 'Thursday', 7, '15:00:00', '16:00:00', 'EOB_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Thursday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0),
 
 -- Friday
 (2, 'Friday', 1, '09:15:00', '10:15:00', NULL, NULL, 'ALL', 0),
 (2, 'Friday', 2, '10:15:00', '11:15:00', 'LADE_P2', (SELECT id FROM classrooms WHERE room_name='LAB-2'), 'A2', 1),
 (2, 'Friday', 3, '11:15:00', '12:15:00', 'PR_P1', (SELECT id FROM classrooms WHERE room_name='LAB-4'), 'A1', 1),
-(2, 'Friday', 5, '13:00:00', '14:00:00', 'EOB_P1', NULL, 'A1', 0),
-(2, 'Friday', 6, '14:00:00', '15:00:00', 'EOB_P2', NULL, 'A2', 0),
-(2, 'Friday', 7, '15:00:00', '16:00:00', 'LADE_T', NULL, 'ALL', 0),
+(2, 'Friday', 5, '13:00:00', '14:00:00', 'EOB_P1', (SELECT id FROM classrooms WHERE room_name='L-17'), 'A1', 0),
+(2, 'Friday', 6, '14:00:00', '15:00:00', 'EOB_P2', (SELECT id FROM classrooms WHERE room_name='L-17'), 'A2', 0),
+(2, 'Friday', 7, '15:00:00', '16:00:00', 'LADE_T', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
 (2, 'Friday', 8, '16:00:00', '17:00:00', NULL, NULL, 'ALL', 0),
 
 -- Saturday
-(2, 'Saturday', 1, '09:15:00', '10:15:00', 'DOUBTS', NULL, 'ALL', 0),
-(2, 'Saturday', 2, '10:15:00', '11:15:00', 'DOUBTS', NULL, 'ALL', 0),
-(2, 'Saturday', 3, '11:15:00', '12:15:00', 'MENTOR', NULL, 'ALL', 0),
-(2, 'Saturday', 5, '13:00:00', '14:00:00', 'CLUBS', NULL, 'ALL', 0),
-(2, 'Saturday', 6, '14:00:00', '15:00:00', 'CLUBS', NULL, 'ALL', 0),
-(2, 'Saturday', 7, '15:00:00', '16:00:00', 'CLUBS', NULL, 'ALL', 0);
+(2, 'Saturday', 1, '09:15:00', '10:15:00', 'DOUBTS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Saturday', 2, '10:15:00', '11:15:00', 'DOUBTS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Saturday', 3, '11:15:00', '12:15:00', 'MENTOR', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Saturday', 5, '13:00:00', '14:00:00', 'CLUBS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Saturday', 6, '14:00:00', '15:00:00', 'CLUBS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0),
+(2, 'Saturday', 7, '15:00:00', '16:00:00', 'CLUBS', (SELECT id FROM classrooms WHERE room_name='L-17'), 'ALL', 0);
