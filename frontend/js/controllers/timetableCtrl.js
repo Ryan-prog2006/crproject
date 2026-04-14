@@ -29,6 +29,15 @@ app.controller('timetableCtrl', ['$scope', 'apiService', function($scope, apiSer
     };
 
     $scope.addSlot = function() {
+        if ($scope.newSlot.period_no) {
+            $scope.newSlot.time_from = $scope.periodLabels[$scope.newSlot.period_no].from + ':00';
+            const toStr = $scope.periodLabels[$scope.newSlot.period_no].to;
+            $scope.newSlot.time_to = (toStr === '01:00' ? '13:00' : (toStr === '02:00' ? '14:00' : (toStr === '03:00' ? '15:00' : (toStr === '04:00' ? '16:00' : (toStr === '05:00' ? '17:00' : toStr))))) + ':00';
+            // Need proper 24h format for time_from, time_to since backend uses TIME type
+            const fromStr = $scope.periodLabels[$scope.newSlot.period_no].from;
+            $scope.newSlot.time_from = (fromStr === '01:00' ? '13:00' : (fromStr === '02:00' ? '14:00' : (fromStr === '03:00' ? '15:00' : (fromStr === '04:00' ? '16:00' : (fromStr === '05:00' ? '17:00' : fromStr))))) + ':00';
+        }
+
         apiService.post('/timetable', $scope.newSlot).then(function() {
             $scope.loadData();
             alert('Slot added');

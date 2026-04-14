@@ -43,12 +43,26 @@ router.post('/', async (req, res) => {
   const { day, period_no, time_from, time_to, subject_code, room_id, is_lab, batch, notes } = req.body;
   try {
     const userId = req.user.role === 'cr' ? req.user.id : (req.body.user_id || 6);
+
+    const finalSubjectCode = subject_code || null;
+    const finalRoomId = room_id || null;
+
+    if (finalSubjectCode) {
+      // Remove any 'Library' placeholder for that same user/day/period so they don't overlap.
+      await db.query(
+        'DELETE FROM timetable WHERE user_id = ? AND day = ? AND period_no = ? AND (subject_code IS NULL OR subject_code = "")',
+        [userId, day, period_no]
+      );
+    }
+
     const [result] = await db.query(
       'INSERT INTO timetable (user_id, day, period_no, time_from, time_to, subject_code, room_id, is_lab, batch, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [userId, day, period_no, time_from, time_to, subject_code, room_id, is_lab, batch, notes]
+      [userId, day, period_no, time_from, time_to, finalSubjectCode, finalRoomId, is_lab, batch, notes]
     );
+
     res.status(201).json({ id: result.insertId });
   } catch (error) {
+    console.error('Error creating slot:', error);
     res.status(500).json({ error: error.message });
   }
 });
