@@ -25,7 +25,7 @@ app.controller('timetableCtrl', ['$scope', 'apiService', function($scope, apiSer
     };
 
     $scope.getSlot = function(day, period) {
-        return $scope.timetable.filter(s => s.day === day && s.period_no === period);
+        return $scope.timetable.filter(s => s.day === day && s.period_no == period);
     };
 
     $scope.addSlot = function() {
