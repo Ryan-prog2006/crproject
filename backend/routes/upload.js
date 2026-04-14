@@ -101,7 +101,7 @@ router.post('/classrooms', async (req, res) => {
             try {
                 await db.query(
                     'INSERT IGNORE INTO classrooms (room_name, floor, capacity) VALUES (?, ?, ?)',
-                    [room.room_name, room.floor || 'Unknown', room.capacity || 60]
+                    [room.room_name, room.floor || 'Unknown', room.capacity || 20]
                 );
                 // Check if row was actually inserted (vs skipped due to duplicate)
                 const [result] = await db.query('SELECT ROW_COUNT() as cnt');

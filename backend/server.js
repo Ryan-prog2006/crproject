@@ -57,13 +57,13 @@ const autoBackfillAttendance = async () => {
             while (curr <= today) {
                 const dayName = days[curr.getDay()];
                 if (dayName !== 'Sunday') {
-                    const [slots] = await db.query('SELECT subject_code, period_no FROM timetable WHERE day = ? AND subject_code IS NOT NULL', [dayName]);
+                    const [slots] = await db.query('SELECT user_id, subject_code, period_no FROM timetable WHERE day = ? AND subject_code IS NOT NULL AND subject_code != ""', [dayName]);
                     for (const slot of slots) {
                         await db.query(
-                            'INSERT INTO attendance_log (subject_code, date, period_no, status) VALUES (?, ?, ?, "conducted")',
-                            [slot.subject_code, curr.toISOString().split('T')[0], slot.period_no]
+                            'INSERT INTO attendance_log (user_id, subject_code, date, period_no, status) VALUES (?, ?, ?, ?, "conducted")',
+                            [slot.user_id, slot.subject_code, curr.toISOString().split('T')[0], slot.period_no]
                         );
-                        await db.query('UPDATE subjects SET completed_classes = completed_classes + 1 WHERE code = ?', [slot.subject_code]);
+                        await db.query('UPDATE subjects SET completed_classes = completed_classes + 1 WHERE code = ? AND user_id = ?', [slot.subject_code, slot.user_id]);
                     }
                 }
                 curr.setDate(curr.getDate() + 1);
@@ -134,6 +134,7 @@ const autoSeed = async () => {
 app.get('/api/seed', async (req, res) => {
     try {
         await runSeed();
+        await autoBackfillAttendance();
         res.json({ success: true, message: 'Database seeded successfully!' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -143,4 +144,5 @@ app.get('/api/seed', async (req, res) => {
 app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
   await autoSeed();
+  await autoBackfillAttendance();
 });

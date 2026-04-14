@@ -37,7 +37,7 @@ router.get('/date/:date', async (req, res) => {
 router.post('/', async (req, res) => {
   const { subject_code, timetable_id, date, period_no, status, notes } = req.body;
   try {
-    const userId = req.user.role === 'cr' ? req.user.id : (req.body.user_id || 6);
+    const userId = req.user.role === 'cr' ? req.user.id : (req.body.user_id || 2);
     await db.query(
       'INSERT INTO attendance_log (user_id, subject_code, timetable_id, date, period_no, status, notes) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [userId, subject_code, timetable_id, date, period_no, status, notes]

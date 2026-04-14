@@ -42,7 +42,7 @@ router.get('/today', async (req, res) => {
 router.post('/', async (req, res) => {
   const { day, period_no, time_from, time_to, subject_code, room_id, is_lab, batch, notes } = req.body;
   try {
-    const userId = req.user.role === 'cr' ? req.user.id : (req.body.user_id || 6);
+    const userId = req.user.role === 'cr' ? req.user.id : (req.body.user_id || 2);
 
     const finalSubjectCode = subject_code || null;
     const finalRoomId = room_id || null;
