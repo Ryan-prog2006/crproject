@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" ng-app="smartClassroomApp">
 <head>
     <meta charset="UTF-8">
@@ -21,8 +21,26 @@
     </nav>
 
     <div class="container" style="padding: 2rem;" ng-controller="classroomCtrl">
+                <div ng-if="currentUser.role === 'admin'" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 25px; width: 100%; display: flex; align-items: center; gap: 15px;">
+            <strong><span style="font-size:1.2rem;">⏱️</span> Predict Availability:</strong>
+            
+            <select ng-model="futureQuery.day" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                <option ng-repeat="day in days" value="{{day}}">{{day}}</option>
+            </select>
+            
+            <input type="time" ng-model="futureQuery.time" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+            
+            <button class="btn btn-primary" ng-click="checkFutureAvailability()" style="padding: 6px 12px;">Check specific time</button>
+            <button class="btn btn-danger" ng-if="futureQuery.active" ng-click="resetLiveStatus()" style="padding: 6px 12px;">Reset to Live</button>
+        </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem">
-            <h2>Classroom Availability – Real Time</h2>
+            <h2>
+                Classroom Availability 
+                <span class="badge" ng-style="{'background': futureQuery.active ? 'var(--warning)' : 'var(--primary)'}" style="vertical-align: middle; margin-left: 10px; font-size: 0.5em;">
+                    {{ futureQuery.active ? 'FUTURE PREVIEW' : 'REAL TIME' }}
+                </span>
+            </h2>
             <div>
                 <button class="btn" ng-class="filter==='all'?'btn-primary':''" ng-click="filter='all'">All</button>
                 <button class="btn" ng-class="filter==='available'?'btn-primary':''" ng-click="filter='available'">Available</button>
@@ -92,3 +110,4 @@
     <script src="js/controllers/classroomCtrl.js"></script>
 </body>
 </html>
+

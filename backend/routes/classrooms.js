@@ -8,11 +8,12 @@ function getISTDate() {
     return new Date(utc + (3600000 * 5.5));
 }
 
-async function getClassroomsDynamic() {
+async function getClassroomsDynamic(queryDay, queryTime) {
     const istNow = getISTDate();
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const todayName = days[istNow.getDay()];
-    const currentTime = istNow.toTimeString().split(' ')[0]; // HH:MM:SS
+    const todayName = queryDay || days[istNow.getDay()];
+    let currentTime = queryTime || istNow.toTimeString().split(' ')[0]; // HH:MM:SS
+    if (queryTime && currentTime.split(':').length === 2) currentTime += ':00';
 
     const [rows] = await db.query(`
       SELECT c.*, 
@@ -50,7 +51,7 @@ async function getClassroomsDynamic() {
 // Get all classrooms
 router.get('/', async (req, res) => {
   try {
-    const rooms = await getClassroomsDynamic();
+    const rooms = await getClassroomsDynamic(req.query.day, req.query.time);
     res.json(rooms);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -60,7 +61,7 @@ router.get('/', async (req, res) => {
 // Get available rooms
 router.get('/available', async (req, res) => {
   try {
-    const rooms = await getClassroomsDynamic();
+    const rooms = await getClassroomsDynamic(req.query.day, req.query.time);
     res.json(rooms.filter(r => r.status === 'available'));
   } catch (error) {
     res.status(500).json({ error: error.message });

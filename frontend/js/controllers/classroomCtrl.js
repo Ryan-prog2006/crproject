@@ -12,6 +12,29 @@ app.controller('classroomCtrl', ['$scope', 'apiService', function($scope, apiSer
         apiService.get('/subjects').then(function(res) { $scope.subjects = res.data; });
     };
 
+    $scope.futureQuery = {
+        active: false,
+        day: 'Monday',
+        time: new Date(1970, 0, 1, 10, 15, 0)
+    };
+    $scope.days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    $scope.checkFutureAvailability = function() {
+        if(!$scope.futureQuery.time) return alert("Please select a valid time");
+        const t = $scope.futureQuery.time;
+        const hh = String(t.getHours()).padStart(2, '0');
+        const mm = String(t.getMinutes()).padStart(2, '0');
+        $scope.futureQuery.active = true;
+        apiService.get(`/classrooms?day=${$scope.futureQuery.day}&time=${hh}:${mm}`).then(function(res) { 
+            $scope.rooms = res.data; 
+        });
+    };
+
+    $scope.resetLiveStatus = function() {
+        $scope.futureQuery.active = false;
+        $scope.loadRooms();
+    };
+
     $scope.filterRooms = function(room) {
         if ($scope.filter === 'all') return true;
         if ($scope.filter === 'available') return room.status === 'available';
